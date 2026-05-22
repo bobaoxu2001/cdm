@@ -145,15 +145,53 @@ def transform_openneuro(rows_limit: int | None) -> tuple[list[dict], list[dict]]
     return subjects, assays
 
 
+def build_terminology_concept_rows() -> list[dict]:
+    vocab_path = project_path("config", "controlled_vocabularies.yaml")
+    vocab = load_yaml(vocab_path)
+    rows: list[dict] = []
+    for category, terms in vocab.items():
+        for term in terms:
+            rows.append(
+                {
+                    "concept_id": stable_id("concept", category, term),
+                    "concept_name": term,
+                    "concept_category": category,
+                    **lineage("controlled vocabulary", "project controlled vocabularies", str(vocab_path), f"{category}:{term}"),
+                }
+            )
+    return rows
+
+
+def build_lineage_rows(tables: dict[str, list[dict]], schema: dict) -> list[dict]:
+    rows: list[dict] = []
+    for table, records in tables.items():
+        primary_key = schema.get(table, {}).get("primary_key", "")
+        for record in records:
+            record_id = str(record.get(primary_key, "")) if primary_key else ""
+            rows.append(
+                {
+                    "lineage_id": stable_id("lineage", table, record_id),
+                    "cdm_table": table,
+                    "cdm_record_id": record_id,
+                    "source_system": record.get("source_system", ""),
+                    "source_file": record.get("source_file", ""),
+                    "processing_script": "src/apply_cdm_mapping.py",
+                }
+            )
+    return rows
+
+
 def run() -> dict[str, int]:
     config = runtime_config()
+    schema = load_yaml(project_path("config", "cdm_schema.yaml"))["tables"]
     row_limit = config.get("sample_rows") if config.get("mode") == "sample" else None
     data_sources = build_data_source_rows()
     studies = build_study_rows()
     geo_samples, geo_assays, measurements = transform_geo(row_limit)
     cp_samples, cp_assays, morph = transform_cell_painting(row_limit)
     subjects, eeg_assays = transform_openneuro(row_limit)
-    tables = {
+    concepts = build_terminology_concept_rows()
+    content_tables = {
         "cdm_data_source": data_sources,
         "cdm_study": studies,
         "cdm_subject": subjects,
@@ -161,8 +199,9 @@ def run() -> dict[str, int]:
         "cdm_assay": geo_assays + cp_assays + eeg_assays,
         "cdm_measurement": measurements,
         "cdm_morphology_profile": morph,
-        "cdm_electrophysiology_event": [],
+        "cdm_terminology_concept": concepts,
     }
+    tables = {**content_tables, "cdm_lineage": build_lineage_rows(content_tables, schema)}
     counts = {}
     for table, rows in tables.items():
         write_csv(rows, project_path("data", "cdm", f"{table}.csv"))

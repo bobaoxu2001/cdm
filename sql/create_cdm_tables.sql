@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS cdm_data_source AS SELECT * FROM read_csv_auto('data/cdm/cdm_data_source.csv');
-CREATE TABLE IF NOT EXISTS cdm_study(study_id VARCHAR, data_source_id VARCHAR, study_title VARCHAR, organism VARCHAR);
+CREATE TABLE IF NOT EXISTS cdm_study AS SELECT * FROM read_csv_auto('data/cdm/cdm_study.csv');
 CREATE TABLE IF NOT EXISTS cdm_subject AS SELECT * FROM read_csv_auto('data/cdm/cdm_subject.csv');
 CREATE TABLE IF NOT EXISTS cdm_sample AS SELECT * FROM read_csv_auto('data/cdm/cdm_sample.csv');
 CREATE TABLE IF NOT EXISTS cdm_assay AS SELECT * FROM read_csv_auto('data/cdm/cdm_assay.csv');
 CREATE TABLE IF NOT EXISTS cdm_measurement AS SELECT * FROM read_csv_auto('data/cdm/cdm_measurement.csv');
-CREATE TABLE IF NOT EXISTS cdm_image_observation(image_observation_id VARCHAR, sample_id VARCHAR, plate_id VARCHAR, well_id VARCHAR, imaging_channel VARCHAR);
 CREATE TABLE IF NOT EXISTS cdm_morphology_profile AS SELECT * FROM read_csv_auto('data/cdm/cdm_morphology_profile.csv');
-CREATE TABLE IF NOT EXISTS cdm_electrophysiology_event AS SELECT * FROM read_csv_auto('data/cdm/cdm_electrophysiology_event.csv');
+CREATE TABLE IF NOT EXISTS cdm_terminology_concept AS SELECT * FROM read_csv_auto('data/cdm/cdm_terminology_concept.csv');
 CREATE TABLE IF NOT EXISTS cdm_data_quality_result AS SELECT * FROM read_csv_auto('data/cdm/cdm_data_quality_result.csv');
+CREATE TABLE IF NOT EXISTS cdm_lineage AS SELECT * FROM read_csv_auto('data/cdm/cdm_lineage.csv');

@@ -1,0 +1,87 @@
+# Source-to-CDM field mapping rules.
+#
+# Each source field name is lowercased and matched against the rules in order;
+# the first matching rule wins. A rule matches if the lowercased field name
+# equals an entry in `field_exact`, OR contains any substring in `field_tokens`.
+# If no rule matches, `numeric_fallback` applies to int/float fields and
+# `default` applies to everything else.
+#
+# `target_cdm_field` is a fixed string. `target_cdm_field_by_token` is an
+# alternative: the first token found as a substring of the field name selects
+# the target field, with `default` used when no token matches.
+
+rules:
+  - name: sample_identifier
+    field_tokens: [geo_accession, sample, well]
+    target_cdm_table: cdm_sample
+    target_cdm_field: sample_id
+    transformation_rule: Use as stable source-linked identifier.
+    mapping_status: mapped
+    mapping_confidence: 0.9
+    qa_rule_id: QA-COMP-002
+
+  - name: subject_identifier
+    field_tokens: [participant, subject]
+    target_cdm_table: cdm_subject
+    target_cdm_field: subject_id
+    transformation_rule: Use as stable source-linked identifier.
+    mapping_status: mapped
+    mapping_confidence: 0.9
+    qa_rule_id: QA-COMP-002
+
+  - name: study_metadata
+    field_tokens: [title, study, organism, characteristics]
+    target_cdm_table: cdm_study
+    target_cdm_field_by_token:
+      title: study_title
+      default: organism
+    transformation_rule: Normalize text and preserve original source value.
+    mapping_status: partially_mapped
+    mapping_confidence: 0.7
+
+  - name: feature_identifier
+    field_exact: [id_ref, identifier]
+    field_tokens: [gene]
+    target_cdm_table: cdm_measurement
+    target_cdm_field: measurement_name
+    transformation_rule: Use feature/gene identifier as measurement_name.
+    mapping_status: mapped
+    mapping_confidence: 0.85
+
+  - name: morphology_feature
+    field_tokens: [cells_, cytoplasm_, nuclei_]
+    target_cdm_table: cdm_morphology_profile
+    target_cdm_field: feature_value
+    transformation_rule: Unpivot morphology feature columns to long feature_name/feature_value records.
+    mapping_status: mapped
+    mapping_confidence: 0.85
+    value_set_crosswalk: "measurement_term:morphology feature"
+
+  - name: assay_descriptor
+    field_tokens: [assay, platform, channel]
+    target_cdm_table: cdm_assay
+    target_cdm_field_by_token:
+      assay: assay_type
+      default: platform
+    transformation_rule: Map to simplified controlled vocabulary where possible.
+    mapping_status: partially_mapped
+    mapping_confidence: 0.75
+    qa_rule_id: QA-CONF-001
+
+numeric_fallback:
+  target_cdm_table: cdm_measurement
+  target_cdm_field: measurement_value
+  transformation_rule: Cast numeric source value and preserve unit if available.
+  mapping_status: review_required
+  mapping_confidence: 0.65
+
+default:
+  target_cdm_table: ""
+  target_cdm_field: ""
+  transformation_rule: No direct CDM target; retain in source profile for review.
+  value_set_crosswalk: ""
+  unit_standardization: ""
+  edge_case_handling: Escalate to data steward if analytically required.
+  qa_rule_id: ""
+  mapping_status: unmapped
+  mapping_confidence: 0.2

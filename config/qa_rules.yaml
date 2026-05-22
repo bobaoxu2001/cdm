@@ -10,7 +10,7 @@ rules:
   - qa_rule_id: QA-COMP-002
     qa_dimension: completeness
     cdm_table: "*"
-    exclude_tables: [cdm_data_source]
+    exclude_tables: [cdm_data_source, cdm_lineage]
     field_name: source_record_id
     severity: high
     check_type: non_null
@@ -34,12 +34,12 @@ rules:
     remediation_guidance: Map assay type to controlled vocabulary.
   - qa_rule_id: QA-PLAUS-001
     qa_dimension: plausibility
-    cdm_table: cdm_electrophysiology_event
-    field_name: duration
+    cdm_table: cdm_measurement
+    field_name: measurement_value
     severity: high
     check_type: non_negative
     acceptance_threshold: 1.0
-    remediation_guidance: Review event extraction and units.
+    remediation_guidance: Review measurement extraction and units; expression signal values must be non-negative.
   - qa_rule_id: QA-MAP-001
     qa_dimension: mapping_coverage
     cdm_table: mapping_catalog

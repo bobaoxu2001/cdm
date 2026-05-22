@@ -16,7 +16,6 @@
 | Cell Painting | Metadata_Well | cdm_sample.sample_id | Combine plate and well into stable sample id |
 | Cell Painting | Cells_* / Cytoplasm_* / Nuclei_* | cdm_morphology_profile.feature_value | Unpivot wide features to long profile records |
 | OpenNeuro | participant_id | cdm_subject.subject_id | Stable participant-linked subject id |
-| OpenNeuro | onset / duration / trial_type | cdm_electrophysiology_event | Cast timing values and preserve event class |
 
 ## Mapping Status Definitions
 

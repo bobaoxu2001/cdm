@@ -2,7 +2,7 @@
 
 Specification-oriented portfolio project for public biomedical data harmonization, source-to-CDM mapping, ETL requirements, terminology alignment, lineage tracking, QA acceptance criteria, and FAIR-aligned documentation.
 
-This project is aimed at the NYU Langone Health Data Harmonization Analyst / Data Science Analyst profile: NAMs-style data workflows, source-to-common-model mapping, functional ETL specifications, data quality review, terminology alignment, metadata standards, and contributor-facing documentation.
+This project is aimed at a healthcare Data Harmonization Analyst / Data Science Analyst profile: NAMs-style data workflows, source-to-common-model mapping, functional ETL specifications, data quality review, terminology alignment, metadata standards, and contributor-facing documentation.
 
 ## Why This Matters
 
@@ -108,7 +108,6 @@ duckdb < sql/qa_summary_queries.sql
 | Metadata_Well | cdm_sample | sample_id | mapped |
 | Cells_* | cdm_morphology_profile | feature_value | mapped |
 | participant_id | cdm_subject | subject_id | mapped |
-| duration | cdm_electrophysiology_event | duration | mapped |
 
 ## Sample QA Summary
 
@@ -126,7 +125,6 @@ duckdb < sql/qa_summary_queries.sql
 |---|---|---|
 | assay_type | Cell Painting / EEG / microarray | auto_mapped or review_required |
 | Cells_Texture_* | texture | review_required |
-| duration | duration | auto_mapped |
 
 ## Large-Scale Design
 
@@ -139,23 +137,3 @@ The code supports chunked reading, gzip/TSV/CSV/parquet files, configurable row 
 - Cell Painting mapping unpivots a bounded feature subset in sample mode; full production use should write partitioned parquet.
 - OpenNeuro raw signal files are excluded unless explicitly enabled.
 - Next steps: add BIDS recursive metadata discovery, dbt/DuckDB pipeline orchestration, steward review UI, and formal vocabulary service integration.
-
-## Role Alignment: NYU Langone
-
-This is a specification-oriented data harmonization project, not just a machine learning project. It emphasizes source profiling, metadata standards, mapping logic, QA acceptance criteria, terminology gaps, lineage, FAIR principles, contributor documentation, and engineering-ready ETL requirements.
-
-## Resume Bullets
-
-- Built a public biomedical data harmonization platform integrating GEO transcriptomics, Cell Painting morphology profiles, and OpenNeuro BIDS metadata with sample/full runtime modes and raw image/signal safeguards.
-- Designed a lightweight OMOP-inspired CDM with lineage-preserving transformations across data source, study, subject, sample, assay, measurement, morphology profile, QA result, and lineage concepts.
-- Generated field-level source-to-CDM mapping catalog with mapping status, confidence, transformation rules, edge case handling, QA rule links, and steward review notes.
-- Implemented QA framework across completeness, conformance, plausibility, uniqueness, referential integrity, lineage traceability, and mapping coverage with executable acceptance thresholds and schema-driven foreign key validation.
-- Created FAIR-aligned contributor and engineering documentation covering ETL requirements, source inventory, data dictionary, terminology gap analysis, large-scale processing design, and NYU role alignment.
-
-## Portfolio Summary
-
-Large-Scale Biomedical Data Harmonization & QA Platform is a GitHub-ready healthcare data project built around real public biomedical research sources: NCBI GEO expression data, Broad Cell Painting morphology profiles, and OpenNeuro BIDS electrophysiology metadata. The project focuses on the practical work required before analysis or modeling: source profiling, schema inference, source-to-CDM mapping, terminology alignment, QA acceptance criteria, lineage tracking, and FAIR documentation. It supports sample and full runtime modes, chunked processing, gzip/parquet-friendly profiling, resumable downloads, checksums, and explicit failure reporting without synthetic fallback data. The CDM is intentionally lightweight and OMOP-inspired rather than claiming full OMOP compliance. Deliverables include executable Python modules, DuckDB SQL, mapping catalogs, QA reports, contributor onboarding materials, ETL functional requirements, and NYU Langone role-alignment documentation.
-
-## 90-Second Interview Explanation
-
-I built this project to show how I would approach biomedical data harmonization before any downstream analytics. The problem is that research data often arrives from different public repositories, assay types, file formats, and metadata conventions, so the first job is to make the data understandable, traceable, and quality-controlled. I used real public data sources: a GEO Series Matrix for transcriptomics, a Broad Cell Painting Gallery morphology profile table for microscopy-derived features, and OpenNeuro BIDS metadata for electrophysiology. The pipeline is designed for large files, with sample and full modes, chunked reading, local caching, checksums, manifest tracking, and no raw image or signal downloads by default. I created a lightweight CDM inspired by OMOP-style thinking, then built a source-to-CDM mapping catalog with transformation rules, confidence, mapping status, and edge case handling. I also added terminology matching with fuzzy and TF-IDF methods, plus a QA framework for completeness, conformance, plausibility, uniqueness, referential integrity, lineage, and mapping coverage. The documentation is written for both engineering handoff and research data contributors. This matches healthcare data harmonization work because the deliverable is not a model; it is a reproducible specification, mapping, QA, and metadata workflow.

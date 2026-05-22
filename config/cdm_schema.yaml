@@ -47,14 +47,6 @@ tables:
       - {field_name: measurement_value, data_type: float, required_flag: false, nullable: true, description: Numeric measurement value}
       - {field_name: unit, data_type: string, required_flag: false, nullable: true, description: Standardized unit if available}
       - {field_name: source_record_id, data_type: string, required_flag: true, nullable: false, description: Source row/feature id}
-  cdm_image_observation:
-    primary_key: image_observation_id
-    fields:
-      - {field_name: image_observation_id, data_type: string, required_flag: true, nullable: false, description: Image metadata identifier, primary_key: true}
-      - {field_name: sample_id, data_type: string, required_flag: false, nullable: true, description: Well or sample id}
-      - {field_name: plate_id, data_type: string, required_flag: false, nullable: true, description: Plate identifier}
-      - {field_name: well_id, data_type: string, required_flag: false, nullable: true, description: Well identifier}
-      - {field_name: imaging_channel, data_type: string, required_flag: false, nullable: true, description: Controlled image channel}
   cdm_morphology_profile:
     primary_key: morphology_profile_id
     fields:
@@ -63,14 +55,6 @@ tables:
       - {field_name: feature_name, data_type: string, required_flag: true, nullable: false, description: Cell Painting feature name}
       - {field_name: feature_value, data_type: float, required_flag: false, nullable: true, description: Numeric morphology feature value}
       - {field_name: source_record_id, data_type: string, required_flag: true, nullable: false, description: Source row id}
-  cdm_electrophysiology_event:
-    primary_key: electrophysiology_event_id
-    fields:
-      - {field_name: electrophysiology_event_id, data_type: string, required_flag: true, nullable: false, description: Event identifier, primary_key: true}
-      - {field_name: subject_id, data_type: string, required_flag: false, nullable: true, description: Participant id}
-      - {field_name: onset, data_type: float, required_flag: false, nullable: true, description: Event onset seconds}
-      - {field_name: duration, data_type: float, required_flag: false, nullable: true, description: Event duration seconds, qa_rule_ids: [QA-PLAUS-001]}
-      - {field_name: trial_type, data_type: string, required_flag: false, nullable: true, description: Event class}
   cdm_terminology_concept:
     primary_key: concept_id
     fields:

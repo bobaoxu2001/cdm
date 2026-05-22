@@ -13,3 +13,4 @@ data/manifests/*.csv
 data/outputs/*.csv
 data/outputs/*.md
 *.part
+INTERVIEW_NOTES.md

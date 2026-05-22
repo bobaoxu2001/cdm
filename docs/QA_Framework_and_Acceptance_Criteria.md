@@ -2,7 +2,7 @@
 
 ## Dimensions
 
-Completeness, conformance, plausibility, uniqueness, referential integrity, lineage traceability, mapping coverage, and schema consistency.
+Completeness, conformance, plausibility, uniqueness, referential integrity, lineage traceability, and mapping coverage.
 
 ## Severity Levels
 
@@ -14,7 +14,7 @@ Completeness, conformance, plausibility, uniqueness, referential integrity, line
 
 ## Rule Inventory
 
-The executable rule set is in `config/qa_rules.yaml`. Examples include required lineage fields, unique primary keys, assay type conformance, non-negative event duration, mapping coverage threshold, and source-file traceability.
+The executable rule set is in `config/qa_rules.yaml`. Examples include required lineage fields, unique primary keys, assay type conformance, non-negative measurement values, schema-driven foreign key resolution, mapping coverage threshold, and source-file traceability.
 
 ## Remediation Workflow
 
