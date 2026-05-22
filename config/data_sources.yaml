@@ -1,0 +1,84 @@
+sources:
+  geo:
+    source_name: NCBI GEO
+    source_type: transcriptomics_gene_expression
+    public_url: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE2034
+    dataset_accession_or_id: GSE2034
+    access_method: HTTPS download from NCBI GEO FTP mirror
+    expected_files:
+      - GSE2034_series_matrix.txt.gz
+    local_raw_path: data/raw/geo
+    local_interim_path: data/interim/geo
+    estimated_size: 14 MB compressed
+    download_strategy: Download GEO Series Matrix only; parse sample metadata and processed matrix values.
+    processing_strategy: Parse metadata header and expression rows with sample-mode limits; full mode profiles all rows.
+    license_or_usage_note: Public GEO research data; cite accession and original submitters.
+    citation_note: NCBI Gene Expression Omnibus accession GSE2034.
+    reason_selected: Public, manageable processed gene expression matrix with hundreds of samples and many features.
+    large_file_warning: Processed matrix is manageable, but full parsing can still expand in memory.
+    files:
+      - url: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE2nnn/GSE2034/matrix/GSE2034_series_matrix.txt.gz
+        local_name: GSE2034_series_matrix.txt.gz
+        file_type: series_matrix
+        required: true
+
+  cell_painting:
+    source_name: Broad Institute Cell Painting Gallery
+    source_type: microscopy_morphology_profiles
+    public_url: https://registry.opendata.aws/cellpainting-gallery/
+    dataset_accession_or_id: cpg0000-jump-pilot/source_4/BR00116991
+    access_method: Anonymous HTTPS access to AWS Open Data S3 object URLs
+    expected_files:
+      - BR00116991.csv.gz
+    local_raw_path: data/raw/cell_painting
+    local_interim_path: data/interim/cell_painting
+    estimated_size: 7 MB compressed for selected well-level profile plate; gallery is hundreds of TB including images.
+    download_strategy: Download selected metadata/profile table only; never raw images unless explicitly enabled.
+    processing_strategy: Chunked CSV/gzip profiling; optional parquet conversion for full mode.
+    license_or_usage_note: AWS Open Data Cell Painting Gallery; use dataset-specific citation and usage notes.
+    citation_note: Broad Institute Cell Painting Gallery / JUMP pilot profile table.
+    reason_selected: Real Cell Painting morphology profile data with microscopy-derived feature columns and plate/well identifiers.
+    large_file_warning: The gallery includes very large raw images; raw image downloads are disabled by default.
+    files:
+      - url: https://cellpainting-gallery.s3.amazonaws.com/cpg0000-jump-pilot/source_4/workspace/profiles/2020_11_04_CPJUMP1/BR00116991/BR00116991.csv.gz
+        local_name: BR00116991.csv.gz
+        file_type: morphology_profile
+        required: true
+
+  openneuro:
+    source_name: OpenNeuro
+    source_type: electrophysiology_bids_metadata
+    public_url: https://openneuro.org/datasets/ds004504
+    dataset_accession_or_id: ds004504
+    access_method: Direct public metadata file access through OpenNeuroDatasets GitHub mirror
+    expected_files:
+      - dataset_description.json
+      - participants.tsv
+      - participants.json
+      - README
+    local_raw_path: data/raw/openneuro
+    local_interim_path: data/interim/openneuro
+    estimated_size: Metadata files are KB to low MB; raw EEG files are intentionally excluded.
+    download_strategy: Download top-level BIDS metadata and discover channel/event files when configured; no raw signal by default.
+    processing_strategy: Profile BIDS TSV/JSON metadata and event/channel schema without loading EDF/SET/BDF signal files.
+    license_or_usage_note: Public OpenNeuro BIDS dataset; cite dataset DOI/accession and respect dataset license.
+    citation_note: OpenNeuro dataset ds004504.
+    reason_selected: Public EEG BIDS dataset with participant metadata and standardized electrophysiology file conventions.
+    large_file_warning: Raw EEG signal files can be large; raw signal downloads are disabled by default.
+    files:
+      - url: https://raw.githubusercontent.com/OpenNeuroDatasets/ds004504/master/dataset_description.json
+        local_name: dataset_description.json
+        file_type: bids_json
+        required: true
+      - url: https://raw.githubusercontent.com/OpenNeuroDatasets/ds004504/master/participants.tsv
+        local_name: participants.tsv
+        file_type: bids_tsv
+        required: true
+      - url: https://raw.githubusercontent.com/OpenNeuroDatasets/ds004504/master/participants.json
+        local_name: participants.json
+        file_type: bids_json
+        required: false
+      - url: https://raw.githubusercontent.com/OpenNeuroDatasets/ds004504/master/README
+        local_name: README
+        file_type: bids_readme
+        required: false

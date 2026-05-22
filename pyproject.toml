@@ -1,0 +1,9 @@
+[project]
+name = "large-scale-biomedical-data-harmonization"
+version = "0.1.0"
+description = "Public biomedical source profiling, source-to-CDM mapping, QA, terminology alignment, and FAIR documentation."
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

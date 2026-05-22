@@ -1,0 +1,67 @@
+rules:
+  - qa_rule_id: QA-COMP-001
+    qa_dimension: completeness
+    cdm_table: "*"
+    field_name: source_system
+    severity: high
+    check_type: non_null
+    acceptance_threshold: 1.0
+    remediation_guidance: Populate source lineage during ingestion or mapping.
+  - qa_rule_id: QA-COMP-002
+    qa_dimension: completeness
+    cdm_table: "*"
+    exclude_tables: [cdm_data_source]
+    field_name: source_record_id
+    severity: high
+    check_type: non_null
+    acceptance_threshold: 0.98
+    remediation_guidance: Create deterministic record identifiers from source file and row position.
+  - qa_rule_id: QA-UNIQ-001
+    qa_dimension: uniqueness
+    cdm_table: "*"
+    field_name: primary_key
+    severity: high
+    check_type: unique
+    acceptance_threshold: 1.0
+    remediation_guidance: Deduplicate or regenerate stable primary keys.
+  - qa_rule_id: QA-CONF-001
+    qa_dimension: conformance
+    cdm_table: cdm_assay
+    field_name: assay_type
+    severity: medium
+    check_type: allowed_values
+    acceptance_threshold: 0.95
+    remediation_guidance: Map assay type to controlled vocabulary.
+  - qa_rule_id: QA-PLAUS-001
+    qa_dimension: plausibility
+    cdm_table: cdm_electrophysiology_event
+    field_name: duration
+    severity: high
+    check_type: non_negative
+    acceptance_threshold: 1.0
+    remediation_guidance: Review event extraction and units.
+  - qa_rule_id: QA-MAP-001
+    qa_dimension: mapping_coverage
+    cdm_table: mapping_catalog
+    field_name: mapping_status
+    severity: medium
+    check_type: coverage_threshold
+    acceptance_threshold: 0.80
+    remediation_guidance: Prioritize unmapped source fields for steward review.
+  - qa_rule_id: QA-REF-001
+    qa_dimension: referential_integrity
+    cdm_table: "*"
+    field_name: foreign_key
+    severity: high
+    check_type: referential_integrity
+    acceptance_threshold: 1.0
+    remediation_guidance: Resolve foreign key values to an existing parent record or backfill the parent table.
+  - qa_rule_id: QA-LIN-001
+    qa_dimension: lineage_traceability
+    cdm_table: "*"
+    exclude_tables: [cdm_data_source]
+    field_name: source_file
+    severity: high
+    check_type: non_null
+    acceptance_threshold: 0.98
+    remediation_guidance: Preserve source file path in all CDM outputs.

@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+data/raw/*
+!data/raw/geo/
+!data/raw/cell_painting/
+!data/raw/openneuro/
+data/interim/*
+data/cdm/*.csv
+data/manifests/*.csv
+data/outputs/*.csv
+data/outputs/*.md
+*.part

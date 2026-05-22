@@ -1,0 +1,19 @@
+matching:
+  auto_map_threshold: 90
+  review_threshold: 70
+  methods:
+    - exact
+    - rapidfuzz_token_sort
+    - tfidf_cosine
+normalization:
+  lowercase: true
+  replace_underscores: true
+  strip_prefixes:
+    - Metadata_
+    - Cells_
+    - Cytoplasm_
+    - Nuclei_
+status_definitions:
+  auto_mapped: High-confidence match to simplified controlled term.
+  review_required: Plausible match that should be checked by a data steward.
+  terminology_gap: No adequate controlled vocabulary match found.

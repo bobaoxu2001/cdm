@@ -1,0 +1,94 @@
+tables:
+  cdm_data_source:
+    primary_key: data_source_id
+    fields:
+      - {field_name: data_source_id, data_type: string, required_flag: true, nullable: false, description: Stable data source identifier, primary_key: true, source_system_notes: Generated from config, qa_rule_ids: [QA-UNIQ-001]}
+      - {field_name: source_system, data_type: string, required_flag: true, nullable: false, description: Source system name, qa_rule_ids: [QA-COMP-001]}
+      - {field_name: source_dataset, data_type: string, required_flag: true, nullable: false, description: Dataset accession or plate id}
+      - {field_name: public_url, data_type: string, required_flag: true, nullable: false, description: Public landing page}
+      - {field_name: citation_note, data_type: string, required_flag: false, nullable: true, description: Citation guidance}
+  cdm_study:
+    primary_key: study_id
+    fields:
+      - {field_name: study_id, data_type: string, required_flag: true, nullable: false, description: Stable study identifier, primary_key: true}
+      - {field_name: data_source_id, data_type: string, required_flag: true, nullable: false, description: Parent data source, foreign_key: cdm_data_source.data_source_id}
+      - {field_name: study_title, data_type: string, required_flag: false, nullable: true, description: Study title}
+      - {field_name: organism, data_type: string, required_flag: false, nullable: true, description: Organism or model system}
+  cdm_subject:
+    primary_key: subject_id
+    fields:
+      - {field_name: subject_id, data_type: string, required_flag: true, nullable: false, description: Subject or participant identifier, primary_key: true}
+      - {field_name: study_id, data_type: string, required_flag: true, nullable: false, description: Parent study, foreign_key: cdm_study.study_id}
+      - {field_name: subject_type, data_type: string, required_flag: true, nullable: false, description: human, animal, cell_line, or unknown, allowed_values: [human, animal, cell_line, unknown]}
+      - {field_name: source_system, data_type: string, required_flag: true, nullable: false, description: Lineage source system, qa_rule_ids: [QA-COMP-001]}
+      - {field_name: source_record_id, data_type: string, required_flag: true, nullable: false, description: Source record identifier, qa_rule_ids: [QA-COMP-002]}
+  cdm_sample:
+    primary_key: sample_id
+    fields:
+      - {field_name: sample_id, data_type: string, required_flag: true, nullable: false, description: Biospecimen/sample/well identifier, primary_key: true}
+      - {field_name: subject_id, data_type: string, required_flag: false, nullable: true, description: Parent subject if available, foreign_key: cdm_subject.subject_id}
+      - {field_name: sample_type, data_type: string, required_flag: false, nullable: true, description: Tissue, cell line, well, or specimen category}
+      - {field_name: source_system, data_type: string, required_flag: true, nullable: false, description: Source system}
+      - {field_name: source_record_id, data_type: string, required_flag: true, nullable: false, description: Source record id}
+  cdm_assay:
+    primary_key: assay_id
+    fields:
+      - {field_name: assay_id, data_type: string, required_flag: true, nullable: false, description: Assay identifier, primary_key: true}
+      - {field_name: sample_id, data_type: string, required_flag: false, nullable: true, description: Parent sample, foreign_key: cdm_sample.sample_id}
+      - {field_name: assay_type, data_type: string, required_flag: true, nullable: false, description: Controlled assay type, allowed_values: [RNA-seq, microarray, Cell Painting, microscopy, EEG, iEEG], qa_rule_ids: [QA-CONF-001]}
+      - {field_name: platform, data_type: string, required_flag: false, nullable: true, description: Platform or instrument}
+      - {field_name: source_file, data_type: string, required_flag: true, nullable: false, description: Source file path, qa_rule_ids: [QA-LIN-001]}
+  cdm_measurement:
+    primary_key: measurement_id
+    fields:
+      - {field_name: measurement_id, data_type: string, required_flag: true, nullable: false, description: Measurement identifier, primary_key: true}
+      - {field_name: assay_id, data_type: string, required_flag: true, nullable: false, description: Parent assay, foreign_key: cdm_assay.assay_id}
+      - {field_name: measurement_name, data_type: string, required_flag: true, nullable: false, description: Gene, feature, or variable name}
+      - {field_name: measurement_value, data_type: float, required_flag: false, nullable: true, description: Numeric measurement value}
+      - {field_name: unit, data_type: string, required_flag: false, nullable: true, description: Standardized unit if available}
+      - {field_name: source_record_id, data_type: string, required_flag: true, nullable: false, description: Source row/feature id}
+  cdm_image_observation:
+    primary_key: image_observation_id
+    fields:
+      - {field_name: image_observation_id, data_type: string, required_flag: true, nullable: false, description: Image metadata identifier, primary_key: true}
+      - {field_name: sample_id, data_type: string, required_flag: false, nullable: true, description: Well or sample id}
+      - {field_name: plate_id, data_type: string, required_flag: false, nullable: true, description: Plate identifier}
+      - {field_name: well_id, data_type: string, required_flag: false, nullable: true, description: Well identifier}
+      - {field_name: imaging_channel, data_type: string, required_flag: false, nullable: true, description: Controlled image channel}
+  cdm_morphology_profile:
+    primary_key: morphology_profile_id
+    fields:
+      - {field_name: morphology_profile_id, data_type: string, required_flag: true, nullable: false, description: Morphology row identifier, primary_key: true}
+      - {field_name: sample_id, data_type: string, required_flag: false, nullable: true, description: Well/sample identifier, foreign_key: cdm_sample.sample_id}
+      - {field_name: feature_name, data_type: string, required_flag: true, nullable: false, description: Cell Painting feature name}
+      - {field_name: feature_value, data_type: float, required_flag: false, nullable: true, description: Numeric morphology feature value}
+      - {field_name: source_record_id, data_type: string, required_flag: true, nullable: false, description: Source row id}
+  cdm_electrophysiology_event:
+    primary_key: electrophysiology_event_id
+    fields:
+      - {field_name: electrophysiology_event_id, data_type: string, required_flag: true, nullable: false, description: Event identifier, primary_key: true}
+      - {field_name: subject_id, data_type: string, required_flag: false, nullable: true, description: Participant id}
+      - {field_name: onset, data_type: float, required_flag: false, nullable: true, description: Event onset seconds}
+      - {field_name: duration, data_type: float, required_flag: false, nullable: true, description: Event duration seconds, qa_rule_ids: [QA-PLAUS-001]}
+      - {field_name: trial_type, data_type: string, required_flag: false, nullable: true, description: Event class}
+  cdm_terminology_concept:
+    primary_key: concept_id
+    fields:
+      - {field_name: concept_id, data_type: string, required_flag: true, nullable: false, description: Simplified controlled vocabulary concept id, primary_key: true}
+      - {field_name: concept_name, data_type: string, required_flag: true, nullable: false, description: Standard term}
+      - {field_name: concept_category, data_type: string, required_flag: true, nullable: false, description: Vocabulary category}
+  cdm_data_quality_result:
+    primary_key: qa_result_id
+    fields:
+      - {field_name: qa_result_id, data_type: string, required_flag: true, nullable: false, description: QA result id, primary_key: true}
+      - {field_name: qa_rule_id, data_type: string, required_flag: true, nullable: false, description: QA rule id}
+      - {field_name: status, data_type: string, required_flag: true, nullable: false, description: pass, warning, or fail, allowed_values: [pass, warning, fail]}
+  cdm_lineage:
+    primary_key: lineage_id
+    fields:
+      - {field_name: lineage_id, data_type: string, required_flag: true, nullable: false, description: Lineage record id, primary_key: true}
+      - {field_name: cdm_table, data_type: string, required_flag: true, nullable: false, description: CDM table}
+      - {field_name: cdm_record_id, data_type: string, required_flag: true, nullable: false, description: CDM record primary key}
+      - {field_name: source_system, data_type: string, required_flag: true, nullable: false, description: Source system}
+      - {field_name: source_file, data_type: string, required_flag: true, nullable: false, description: Parent source file}
+      - {field_name: processing_script, data_type: string, required_flag: true, nullable: false, description: Script that produced the record}

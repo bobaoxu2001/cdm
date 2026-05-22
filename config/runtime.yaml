@@ -1,0 +1,9 @@
+mode: sample
+sample_rows: 50000
+chunk_size: 100000
+enable_full_download: false
+enable_raw_images: false
+enable_raw_signal_files: false
+cache_downloads: true
+overwrite_existing: false
+log_level: INFO
