@@ -68,6 +68,41 @@ rules:
     mapping_confidence: 0.75
     qa_rule_id: QA-CONF-001
 
+  - name: demographic_age
+    field_exact: [age]
+    target_cdm_table: cdm_clinical_observation
+    target_cdm_field: observation_value_numeric
+    transformation_rule: Cast to numeric; set observation_type=age and unit=years.
+    mapping_status: mapped
+    mapping_confidence: 0.9
+    qa_rule_id: QA-COMP-002
+
+  - name: demographic_sex_gender
+    field_exact: [sex, gender]
+    target_cdm_table: cdm_clinical_observation
+    target_cdm_field: observation_value_text
+    transformation_rule: Retain source value; set observation_type=gender.
+    mapping_status: mapped
+    mapping_confidence: 0.85
+
+  - name: clinical_scale_score
+    field_exact: [mmse, moca]
+    field_tokens: [mmse, moca, clinical_score, cognitive]
+    target_cdm_table: cdm_clinical_observation
+    target_cdm_field: observation_value_numeric
+    transformation_rule: Cast to numeric; set observation_type=clinical_scale_score and record scale name in observation_name.
+    mapping_status: mapped
+    mapping_confidence: 0.85
+    qa_rule_id: QA-COMP-002
+
+  - name: group_assignment
+    field_exact: [group]
+    target_cdm_table: cdm_clinical_observation
+    target_cdm_field: observation_value_text
+    transformation_rule: Retain source value; set observation_type=group_assignment.
+    mapping_status: mapped
+    mapping_confidence: 0.8
+
 numeric_fallback:
   target_cdm_table: cdm_measurement
   target_cdm_field: measurement_value

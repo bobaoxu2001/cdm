@@ -55,6 +55,18 @@ tables:
       - {field_name: feature_name, data_type: string, required_flag: true, nullable: false, description: Cell Painting feature name}
       - {field_name: feature_value, data_type: float, required_flag: false, nullable: true, description: Numeric morphology feature value}
       - {field_name: source_record_id, data_type: string, required_flag: true, nullable: false, description: Source row id}
+  cdm_clinical_observation:
+    primary_key: observation_id
+    fields:
+      - {field_name: observation_id, data_type: string, required_flag: true, nullable: false, description: Observation identifier, primary_key: true}
+      - {field_name: subject_id, data_type: string, required_flag: true, nullable: false, description: Parent subject, foreign_key: cdm_subject.subject_id}
+      - {field_name: observation_type, data_type: string, required_flag: true, nullable: false, description: Controlled observation type, allowed_values: [age, gender, clinical_scale_score, group_assignment], qa_rule_ids: [QA-CONF-002]}
+      - {field_name: observation_name, data_type: string, required_flag: true, nullable: false, description: Source field name used as observation label}
+      - {field_name: observation_value_numeric, data_type: float, required_flag: false, nullable: true, description: Numeric observation value}
+      - {field_name: observation_value_text, data_type: string, required_flag: false, nullable: true, description: Text observation value}
+      - {field_name: unit, data_type: string, required_flag: false, nullable: true, description: Unit if applicable}
+      - {field_name: source_system, data_type: string, required_flag: true, nullable: false, description: Source system, qa_rule_ids: [QA-COMP-001]}
+      - {field_name: source_record_id, data_type: string, required_flag: true, nullable: false, description: Source record id, qa_rule_ids: [QA-COMP-002]}
   cdm_terminology_concept:
     primary_key: concept_id
     fields:

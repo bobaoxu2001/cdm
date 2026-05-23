@@ -32,6 +32,14 @@ rules:
     check_type: allowed_values
     acceptance_threshold: 0.95
     remediation_guidance: Map assay type to controlled vocabulary.
+  - qa_rule_id: QA-CONF-002
+    qa_dimension: conformance
+    cdm_table: cdm_clinical_observation
+    field_name: observation_type
+    severity: medium
+    check_type: allowed_values_clinical_obs
+    acceptance_threshold: 1.0
+    remediation_guidance: Set observation_type to one of age, gender, clinical_scale_score, or group_assignment.
   - qa_rule_id: QA-PLAUS-001
     qa_dimension: plausibility
     cdm_table: cdm_measurement

@@ -35,3 +35,26 @@ measurement_term:
   - texture
   - voltage
   - frequency
+demographic_term:
+  - age
+  - sex
+  - gender
+  - race
+  - ethnicity
+  - group
+  - participant_id
+  - subject_id
+clinical_scale:
+  - MMSE
+  - MoCA
+  - diagnosis
+  - clinical_score
+  - cognitive_score
+  - disease_duration
+genomics_term:
+  - gene_expression
+  - expression_value
+  - fold_change
+  - log2_ratio
+  - p_value
+  - normalized_count

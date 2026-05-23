@@ -131,18 +131,47 @@ def transform_cell_painting(rows_limit: int | None) -> tuple[list[dict], list[di
     return samples, assays, morph
 
 
-def transform_openneuro(rows_limit: int | None) -> tuple[list[dict], list[dict]]:
+_CLINICAL_OBS_MAP = {
+    "age": ("age", "years"),
+    "gender": ("gender", ""),
+    "sex": ("gender", ""),
+    "mmse": ("clinical_scale_score", "points"),
+    "moca": ("clinical_scale_score", "points"),
+    "group": ("group_assignment", ""),
+}
+
+
+def transform_openneuro(rows_limit: int | None) -> tuple[list[dict], list[dict], list[dict]]:
     path = project_path("data", "raw", "openneuro", "participants.tsv")
     if not path.exists():
-        return [], []
+        return [], [], []
     frame = read_tabular_sample(path, nrows=rows_limit)
-    subjects, assays = [], []
+    subjects, assays, observations = [], [], []
     for _, row in frame.iterrows():
         participant = str(row.get("participant_id", row.iloc[0]))
         subject_id = stable_id("openneuro", participant)
-        subjects.append({"subject_id": subject_id, "study_id": study_id_for("openneuro"), "subject_type": "human", **lineage("OpenNeuro", "ds004504", str(path), participant)})
-        assays.append({"assay_id": stable_id("eeg-assay", participant), "sample_id": "", "assay_type": "EEG", "platform": "BIDS EEG metadata", "source_file": str(path), **lineage("OpenNeuro", "ds004504", str(path), participant)})
-    return subjects, assays
+        lin = lineage("OpenNeuro", "ds004504", str(path), participant)
+        subjects.append({"subject_id": subject_id, "study_id": study_id_for("openneuro"), "subject_type": "human", **lin})
+        assays.append({"assay_id": stable_id("eeg-assay", participant), "sample_id": "", "assay_type": "EEG", "platform": "BIDS EEG metadata", "source_file": str(path), **lin})
+        for col in frame.columns:
+            col_key = col.lower()
+            if col_key not in _CLINICAL_OBS_MAP:
+                continue
+            obs_type, unit = _CLINICAL_OBS_MAP[col_key]
+            raw_val = row.get(col)
+            num_val = pd.to_numeric(raw_val, errors="coerce")
+            text_val = "" if pd.notna(num_val) else str(raw_val) if pd.notna(raw_val) else ""
+            observations.append({
+                "observation_id": stable_id("obs", participant, col),
+                "subject_id": subject_id,
+                "observation_type": obs_type,
+                "observation_name": col,
+                "observation_value_numeric": num_val,
+                "observation_value_text": text_val,
+                "unit": unit,
+                **lin,
+            })
+    return subjects, assays, observations
 
 
 def build_terminology_concept_rows() -> list[dict]:
@@ -189,7 +218,7 @@ def run() -> dict[str, int]:
     studies = build_study_rows()
     geo_samples, geo_assays, measurements = transform_geo(row_limit)
     cp_samples, cp_assays, morph = transform_cell_painting(row_limit)
-    subjects, eeg_assays = transform_openneuro(row_limit)
+    subjects, eeg_assays, observations = transform_openneuro(row_limit)
     concepts = build_terminology_concept_rows()
     content_tables = {
         "cdm_data_source": data_sources,
@@ -199,6 +228,7 @@ def run() -> dict[str, int]:
         "cdm_assay": geo_assays + cp_assays + eeg_assays,
         "cdm_measurement": measurements,
         "cdm_morphology_profile": morph,
+        "cdm_clinical_observation": observations,
         "cdm_terminology_concept": concepts,
     }
     tables = {**content_tables, "cdm_lineage": build_lineage_rows(content_tables, schema)}

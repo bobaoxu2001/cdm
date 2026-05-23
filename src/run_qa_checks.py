@@ -108,6 +108,12 @@ def run() -> list[dict]:
                 allowed = set(load_yaml(project_path("config", "controlled_vocabularies.yaml")).get("assay_type", []))
                 ok = frame[rule["field_name"]].isin(allowed)
                 rows.append(result(rule, int(ok.sum()), int((~ok).sum()), table=table))
+            elif rule["check_type"] == "allowed_values_clinical_obs" and rule["field_name"] in frame.columns:
+                schema_def = schema.get(table, {})
+                allowed_field = next((f for f in schema_def.get("fields", []) if f["field_name"] == rule["field_name"]), {})
+                allowed = set(allowed_field.get("allowed_values", []))
+                ok = frame[rule["field_name"]].isin(allowed)
+                rows.append(result(rule, int(ok.sum()), int((~ok).sum()), table=table))
             elif rule["check_type"] == "non_negative" and rule["field_name"] in frame.columns:
                 vals = pd.to_numeric(frame[rule["field_name"]], errors="coerce")
                 ok = vals.ge(0) | vals.isna()

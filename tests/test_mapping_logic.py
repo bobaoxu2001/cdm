@@ -23,3 +23,27 @@ def test_mapping_coverage_calculation_shape():
     catalog = pd.DataFrame({"mapping_status": ["mapped", "partially_mapped", "unmapped"]})
     coverage = catalog["mapping_status"].isin(["mapped", "partially_mapped"]).mean()
     assert coverage == 2 / 3
+
+
+def test_mapping_demographic_age_routes_to_clinical_observation():
+    mapping = choose_mapping("Age", "int64")
+    assert mapping["target_cdm_table"] == "cdm_clinical_observation"
+    assert mapping["mapping_status"] == "mapped"
+
+
+def test_mapping_demographic_gender_routes_to_clinical_observation():
+    mapping = choose_mapping("Gender", "object")
+    assert mapping["target_cdm_table"] == "cdm_clinical_observation"
+    assert mapping["mapping_status"] == "mapped"
+
+
+def test_mapping_mmse_routes_to_clinical_observation():
+    mapping = choose_mapping("MMSE", "int64")
+    assert mapping["target_cdm_table"] == "cdm_clinical_observation"
+    assert mapping["mapping_status"] == "mapped"
+
+
+def test_mapping_group_routes_to_clinical_observation():
+    mapping = choose_mapping("Group", "object")
+    assert mapping["target_cdm_table"] == "cdm_clinical_observation"
+    assert mapping["mapping_status"] == "mapped"
