@@ -191,19 +191,25 @@ def build_terminology_concept_rows() -> list[dict]:
     return rows
 
 
+_DATA_SOURCES_CONFIG = "config/data_sources.yaml"
+
+
 def build_lineage_rows(tables: dict[str, list[dict]], schema: dict) -> list[dict]:
     rows: list[dict] = []
     for table, records in tables.items():
         primary_key = schema.get(table, {}).get("primary_key", "")
         for record in records:
             record_id = str(record.get(primary_key, "")) if primary_key else ""
+            source_file = record.get("source_file", "") or ""
+            if not source_file and table == "cdm_data_source":
+                source_file = _DATA_SOURCES_CONFIG
             rows.append(
                 {
                     "lineage_id": stable_id("lineage", table, record_id),
                     "cdm_table": table,
                     "cdm_record_id": record_id,
                     "source_system": record.get("source_system", ""),
-                    "source_file": record.get("source_file", ""),
+                    "source_file": source_file,
                     "processing_script": "src/apply_cdm_mapping.py",
                 }
             )

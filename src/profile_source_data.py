@@ -13,42 +13,85 @@ LOGGER = configure_logging(__name__)
 
 
 def profile_frame(frame: pd.DataFrame, source_file: str, source_system: str) -> tuple[dict, list[dict]]:
-    summary = {
-        "source_file": source_file,
-        "source_system": source_system,
-        "row_count": len(frame),
-        "column_count": len(frame.columns),
-        "candidate_identifiers": "; ".join([c for c in frame.columns if "id" in c.lower() or c.lower().endswith("accession")][:10]),
-        "candidate_foreign_keys": "; ".join([c for c in frame.columns if c.lower().endswith("_id")][:10]),
-        "source_quality_warnings": "",
-    }
+    total_rows = len(frame)
+    col_warnings: list[str] = []
     column_rows: list[dict] = []
+
     for col in frame.columns:
         series = frame[col]
         numeric = pd.to_numeric(series, errors="coerce")
         top = series.dropna().astype(str).value_counts().head(5)
-        missing_pct = float(series.isna().mean()) if len(series) else 0.0
+        null_count = int(series.isna().sum())
+        null_rate = round(null_count / total_rows, 4) if total_rows else 0.0
+        distinct = int(series.nunique(dropna=True))
+        unique_rate = round(distinct / total_rows, 4) if total_rows else 0.0
+
+        # type mismatch: declared object but mostly numeric, or numeric dtype but has non-coercible values
+        is_numeric_dtype = str(series.dtype).startswith(("int", "float"))
+        non_null_series = series.dropna()
+        if is_numeric_dtype:
+            type_mismatch_count = 0
+        else:
+            coerced = pd.to_numeric(non_null_series, errors="coerce")
+            numeric_convertible = coerced.notna().sum()
+            if len(non_null_series) > 0 and numeric_convertible / len(non_null_series) > 0.8:
+                type_mismatch_count = int(coerced.isna().sum())
+            else:
+                type_mismatch_count = 0
+
+        # outlier count (IQR method): values outside Q1 - 1.5*IQR or Q3 + 1.5*IQR
+        outlier_count = 0
+        if numeric.notna().sum() >= 4:
+            q1 = float(numeric.quantile(0.25))
+            q3 = float(numeric.quantile(0.75))
+            iqr = q3 - q1
+            if iqr > 0:
+                lower, upper = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+                outlier_count = int(((numeric < lower) | (numeric > upper)).sum())
+
         warnings = []
-        if missing_pct > 0.5:
+        if null_rate > 0.5:
             warnings.append("high_missingness")
-        if series.nunique(dropna=True) == len(series) and len(series) > 0:
+            col_warnings.append(f"{col}:high_missingness")
+        if unique_rate == 1.0 and total_rows > 1:
             warnings.append("possible_identifier")
+        if type_mismatch_count > 0:
+            warnings.append("type_mismatch")
+            col_warnings.append(f"{col}:type_mismatch")
+        if outlier_count > 0 and numeric.notna().any():
+            warnings.append(f"outliers:{outlier_count}")
+
         column_rows.append(
             {
                 "source_file": source_file,
                 "source_system": source_system,
                 "column_name": col,
                 "inferred_dtype": str(series.dtype),
-                "missingness_pct": round(missing_pct, 4),
-                "distinct_value_count": int(series.nunique(dropna=True)),
+                "null_count": null_count,
+                "null_rate": null_rate,
+                "distinct_value_count": distinct,
+                "unique_rate": unique_rate,
+                "type_mismatch_count": type_mismatch_count,
+                "outlier_count": outlier_count,
                 "top_values": "; ".join(f"{idx}:{val}" for idx, val in top.items()),
-                "numeric_min": numeric.min() if numeric.notna().any() else "",
-                "numeric_max": numeric.max() if numeric.notna().any() else "",
-                "numeric_mean": numeric.mean() if numeric.notna().any() else "",
-                "approx_cardinality": int(series.nunique(dropna=True)),
+                "numeric_min": round(float(numeric.min()), 4) if numeric.notna().any() else "",
+                "numeric_max": round(float(numeric.max()), 4) if numeric.notna().any() else "",
+                "numeric_mean": round(float(numeric.mean()), 4) if numeric.notna().any() else "",
+                "numeric_std": round(float(numeric.std()), 4) if numeric.notna().sum() >= 2 else "",
                 "warnings": "; ".join(warnings),
             }
         )
+
+    summary = {
+        "source_file": source_file,
+        "source_system": source_system,
+        "row_count": total_rows,
+        "column_count": len(frame.columns),
+        "candidate_identifiers": "; ".join([c for c in frame.columns if "id" in c.lower() or c.lower().endswith("accession")][:10]),
+        "candidate_foreign_keys": "; ".join([c for c in frame.columns if c.lower().endswith("_id")][:10]),
+        "columns_with_warnings": len(col_warnings),
+        "source_quality_warnings": "; ".join(col_warnings[:10]),
+    }
     return summary, column_rows
 
 
